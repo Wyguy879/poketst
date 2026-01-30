@@ -21,6 +21,119 @@
             background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
             color: #333;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode h1 {
+            color: #bb86fc;
+        }
+
+        body.dark-mode .card {
+            background: #1e1e2e;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode input {
+            background: #2d2d44;
+            border-color: #4a4a6a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode input:focus {
+            border-color: #bb86fc;
+        }
+
+        body.dark-mode .suggestion {
+            background: #2d2d44;
+            border-bottom: 1px solid #3d3d5c;
+        }
+
+        body.dark-mode .suggestion:hover, body.dark-mode .suggestion.selected {
+            background-color: #3d3d5c;
+        }
+
+        body.dark-mode .stat-name {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .stat-bar {
+            background: #3d3d5c;
+        }
+
+        body.dark-mode .stat-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+        }
+
+        body.dark-mode .generation {
+            background: #2d2d44;
+            border-left: 4px solid #bb86fc;
+        }
+
+        body.dark-mode .generation-info {
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .favorite-btn {
+            background: #bb86fc;
+            color: #1e1e2e;
+        }
+
+        body.dark-mode .favorite-btn:hover {
+            background: #9965f4;
+        }
+
+        body.dark-mode .favorite-btn.favorited {
+            background: #bb86fc;
+            color: #1e1e2e;
+        }
+
+        body.dark-mode .loading p {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .error {
+            color: #ff6b6b;
+            background: #2d2d44;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        body.dark-mode .favorites-section {
+            background: #1e1e2e;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .favorite-item {
+            background: #2d2d44;
+        }
+
+        body.dark-mode .forms strong {
+            color: #bb86fc;
+        }
+
+        body.dark-mode .ability {
+            background: #3d3d5c;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .type-badge {
+            color: #1e1e2e;
+        }
+
+        body.dark-mode .ability {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .stat-value {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .generation-icon {
+            color: #1e1e2e;
         }
 
         h1 {
