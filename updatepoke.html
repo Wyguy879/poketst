@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poké Search 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            padding-top: 50px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #3f51b5;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-size: 2.5em;
+            position: relative;
+        }
+
+        h1::after {
+            content: "⚡";
+            position: absolute;
+            right: -40px;
+            top: 0;
+            font-size: 0.6em;
+        }
+
+        .search-container {
+            position: relative;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            width: 100%;
+            transition: border-color 0.3s;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3f51b5;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ef5350, #e53935);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        #suggestions {
+            position: absolute;
+            top: 100%;
+            left: 15px;
+            right: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-height: 160px;
+            overflow-y: auto;
+            z-index: 10;
+            margin-top: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .suggestion {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion:hover, .suggestion.selected {
+            background-color: #f5f5f5;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #f44336, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0);
+        }
+
+        img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 4px solid #f0f0f0;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+            object-fit: cover;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+
+        h2 {
+            margin: 15px 0;
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .types {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .type-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .details {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .ability {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+
+        .stats {
+            margin-top: 15px;
+        }
+
+        .stat {
+            margin-bottom: 8px;
+        }
+
+        .stat-name {
+            font-weight: bold;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .stat-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            width: 60%;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 4px;
+        }
+
+        .generation {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            border-left: 4px solid #3f51b5;
+        }
+
+        .generation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .generation-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .generation-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .favorite-btn {
+            margin-top: 15px;
+            background: #ffeb3b;
+            color: #333;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        .favorite-btn:hover {
+            background: #fdd835;
+            transform: scale(1.05);
+        }
+
+        .favorite-btn.favorited {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #ef5350;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #d32f2f;
+            margin-top: 20px;
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .favorites-section {
+            margin-top: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .favorites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .favorite-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .favorite-item button {
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .forms {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .forms strong {
+            color: #3f51b5;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                padding-top: 100px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h1::after {
+                display: none;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+            
+            .card {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .favorites-section {
+                width: 100%;
+            }
+            
+            .stat-bar {
+                width: 40%;
+            }
+            
+            .types {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Poké Search 2025</h1>
+
+    <div class="search-container">
+        <input
+            type="text"
+            id="pokeInput"
+            placeholder="Name or ID (e.g. Pikachu)"
+            autocomplete="off"
+        >
+        <div class="button-container">
+            <button onclick="searchPokemon()">Search</button>
+            <button onclick="searchRandomPokemon()">Random</button>
+        </div>
+        <div id="suggestions"></div>
+    </div>
+
+    <div id="resultArea"></div>
+    
+    <div class="favorites-section">
+        <h3>Favorite Pokémon</h3>
+        <div id="favoritesList" class="favorites-list"></div>
+    </div>
+
+    <script>
+        // Type colors
+        const typeColors = {
+            normal: '#A8A878',
+            fire: '#F08030',
+            water: '#6890F0',
+            electric: '#F8D030',
+            grass: '#78C850',
+            ice: '#98D8D8',
+            fighting: '#C03028',
+            poison: '#A040A0',
+            ground: '#E0C068',
+            flying: '#A890F0',
+            psychic: '#F85888',
+            bug: '#A8B820',
+            rock: '#B8A038',
+            ghost: '#705898',
+            dragon: '#7038F8',
+            dark: '#705848',
+            steel: '#B8B8D0',
+            fairy: '#EE99AC'
+        };
+
+        // Generation colors and info
+        const generationInfo = {
+            1: { 
+                name: "Generation I", 
+                region: "Kanto", 
+                year: "1996",
+                color: "#F08030",
+                icon: "I"
+            },
+            2: { 
+                name: "Generation II", 
+                region: "Johto", 
+                year: "1999",
+                color: "#6890F0",
+                icon: "II"
+            },
+            3: { 
+                name: "Generation III", 
+                region: "Hoenn", 
+                year: "2002",
+                color: "#78C850",
+                icon: "III"
+            },
+            4: { 
+                name: "Generation IV", 
+                region: "Sinnoh", 
+                year: "2006",
+                color: "#B8A038",
+                icon: "IV"
+            },
+            5: { 
+                name: "Generation V", 
+                region: "Unova", 
+                year: "2010",
+                color: "#A890F0",
+                icon: "V"
+            },
+            6: { 
+                name: "Generation VI", 
+                region: "Kalos", 
+                year: "2013",
+                color: "#F8D030",
+                icon: "VI"
+            },
+            7: { 
+                name: "Generation VII", 
+                region: "Alola", 
+                year: "2016",
+                color: "#98D8D8",
+                icon: "VII"
+            },
+            8: { 
+                name: "Generation VIII", 
+                region: "Galar", 
+                year: "2019",
+                color: "#F85888",
+                icon: "VIII"
+            },
+            9: { 
+                name: "Generation IX", 
+                region: "Paldea", 
+                year: "2022",
+                color: "#EE99AC",
+                icon: "IX"
+            }
+        };
+
+        // Global variables
+        let allPokemon = [];
+        let failedCache = {};
+        let pokemonCache = {};
+        let favorites = JSON.parse(localStorage.getItem('pokemonFavorites')) || [];
+        let selectedIndex = -1;
+        let debounceTimer;
+
+        // Get DOM elements
+        const input = document.getElementById("pokeInput");
+        const suggestionsBox = document.getElementById("suggestions");
+        const resultArea = document.getElementById("resultArea");
+
+        // Load all Pokémon names once
+        (async function loadPokemonList() {
+            try {
+                const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
+                const data = await res.json();
+                allPokemon = data.results.map(p => p.name);
+                displayFavorites(); // Display favorites after loading
+            } catch (error) {
+                console.error("Error loading Pokémon list:", error);
+                resultArea.innerHTML = `<div class="error">Error loading Pokémon data. Please refresh the page.</div>`;
+            }
+        })();
+
+        // Get generation number from Pokémon ID
+        function getGeneration(pokemonId) {
+            if (pokemonId <= 151) return 1;
+            if (pokemonId <= 251) return 2;
+            if (pokemonId <= 386) return 3;
+            if (pokemonId <= 493) return 4;
+            if (pokemonId <= 649) return 5;
+            if (pokemonId <= 721) return 6;
+            if (pokemonId <= 809) return 7;
+            if (pokemonId <= 905) return 8;
+            return 9;
+        }
+
+        // Autocomplete
+        input.addEventListener("input", () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const value = input.value.toLowerCase().trim();
+                suggestionsBox.innerHTML = "";
+                selectedIndex = -1;
+
+                if (!value) return;
+
+                const matches = allPokemon
+                    .filter(name => name.startsWith(value))
+                    .slice(0, 6);
+
+                matches.forEach(name => {
+                    const div = document.createElement("div");
+                    div.className = "suggestion";
+                    div.textContent = name;
+                    div.onclick = () => {
+                        input.value = name;
+                        suggestionsBox.innerHTML = "";
+                        searchPokemon();
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+            }, 300);
+        });
+
+        // Keyboard navigation
+        input.addEventListener("keydown", (e) => {
+            const suggestions = suggestionsBox.getElementsByClassName("suggestion");
+            
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+                updateSelection();
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelection();
+            } else if (e.key === "Enter" && selectedIndex >= 0) {
+                e.preventDefault();
+                suggestions[selectedIndex].click();
+            } else if (e.key === "Escape") {
+                suggestionsBox.innerHTML = "";
+                selectedIndex = -1;
+            }
+        });
+
+        function updateSelection() {
+            const suggestions = suggestionsBox.getElementsByClassName("suggestion");
+            Array.from(suggestions).forEach((suggestion, i) => {
+                if (i === selectedIndex) {
+                    suggestion.classList.add("selected");
+                    suggestion.scrollIntoView({ block: "nearest" });
+                } else {
+                    suggestion.classList.remove("selected");
+                }
+            });
+        }
+
+        // Get type color
+        function getTypeColor(typeName) {
+            return typeColors[typeName] || '#A8A878';
+        }
+
+        // Show loading state
+        function showLoading() {
+            resultArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading Pokémon data...</p>
+                </div>
+            `;
+        }
+
+        // Main search
+        async function searchPokemon() {
+            const name = input.value
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, "-");
+
+            suggestionsBox.innerHTML = "";
+            showLoading();
+
+            if (!name) return;
+
+            // Check cache first
+            if (pokemonCache[name]) {
+                showPokemon(pokemonCache[name]);
+                const species = pokemonCache[name].species;
+                showForms(species);
+                return;
+            }
+
+            // Check for cached failure
+            if (failedCache[name]) {
+                showHints(name);
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+                if (!response.ok) throw new Error();
+
+                const data = await response.json();
+                pokemonCache[name] = data; // Cache the result
+                showPokemon(data);
+
+                const speciesRes = await fetch(data.species.url);
+                const species = await speciesRes.json();
+                pokemonCache[name].species = species; // Cache species too
+                showForms(species);
+
+            } catch {
+                failedCache[name] = true;
+                showHints(name);
+            }
+        }
+
+        // Display Pokémon
+        function showPokemon(data) {
+            const typeBadges = data.types.map(t => 
+                `<span class="type-badge" style="background-color: ${getTypeColor(t.type.name)}">${t.type.name}</span>`
+            ).join('');
+            
+            const abilities = data.abilities.map(a => 
+                `<span class="ability">${a.ability.name.replace('-', ' ')}</span>`
+            ).join(', ');
+            
+            const isFavorite = favorites.includes(data.name);
+            
+            // Get generation information
+            const generationNum = getGeneration(data.id);
+            const genInfo = generationInfo[generationNum];
+            
+            resultArea.innerHTML = `
+                <div class="card">
+                    <img src="${data.sprites.front_default}" alt="${data.name}">
+                    <h2>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</h2>
+                    <div class="types">${typeBadges}</div>
+                    <div class="details">
+                        <p><strong>Height:</strong> ${data.height / 10} m</p>
+                        <p><strong>Weight:</strong> ${data.weight / 10} kg</p>
+                        <p><strong>Abilities:</strong> ${abilities}</p>
+                        <p><strong>Base Stats:</strong></p>
+                        <div class="stats">
+                            ${data.stats.map(stat => 
+                                `<div class="stat">
+                                    <span class="stat-name">${stat.stat.name.replace('-', ' ')}:</span>
+                                    <span class="stat-value">${stat.base_stat}</span>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill" style="width: ${(stat.base_stat / 150) * 100}%"></div>
+                                    </div>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    <div class="generation">
+                        <div class="generation-header">
+                            <div class="generation-icon" style="background-color: ${genInfo.color}">
+                                ${genInfo.icon}
+                            </div>
+                            <span>${genInfo.name}</span>
+                        </div>
+                        <div class="generation-info">
+                            Region: ${genInfo.region} • Released: ${genInfo.year}
+                        </div>
+                    </div>
+                    <button onclick="toggleFavorite('${data.name}')" class="favorite-btn ${isFavorite ? 'favorited' : ''}">
+                        ${isFavorite ? '★' : '☆'} Favorite
+                    </button>
+                </div>
+            `;
+        }
+
+        // Display valid forms
+        function showForms(species) {
+            if (species.varieties.length <= 1) return;
+
+            const forms = species.varieties
+                .map(v => v.pokemon.name)
+                .join(", ");
+
+            resultArea.innerHTML += `
+                <div class="forms">
+                    <strong>Forms:</strong> ${forms}
+                </div>
+            `;
+        }
+
+        // Failed search hints
+        function showHints(name) {
+            const hints = allPokemon
+                .filter(p => p.includes(name))
+                .slice(0, 6);
+
+            resultArea.innerHTML = `
+                <div class="error">
+                    Pokémon not found.
+                    ${hints.length ? `<br>Did you mean: ${hints.join(", ")}?` : ""}
+                </div>
+            `;
+        }
+
+        // Toggle favorite
+        function toggleFavorite(pokemonName) {
+            const index = favorites.indexOf(pokemonName);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(pokemonName);
+            }
+            localStorage.setItem('pokemonFavorites', JSON.stringify(favorites));
+            searchPokemon(); // Refresh to update button state
+            displayFavorites();
+        }
+
+        // Display favorites
+        function displayFavorites() {
+            const favoritesList = document.getElementById('favoritesList');
+            if (!favoritesList) return;
+            
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<p style="color: #757575;">No favorites yet. Click the star on a Pokémon card to add it!</p>';
+                return;
+            }
+            
+            favoritesList.innerHTML = favorites.map(name => 
+                `<div class="favorite-item">
+                    <span>${name.charAt(0).toUpperCase() + name.slice(1)}</span>
+                    <div>
+                        <button onclick="searchPokemonByName('${name}')" style="margin-right: 5px; padding: 4px 8px;">View</button>
+                        <button onclick="removeFavorite('${name}')" style="padding: 4px 8px;">Remove</button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        // Remove favorite
+        function removeFavorite(name) {
+            favorites = favorites.filter(fav => fav !== name);
+            localStorage.setItem('pokemonFavorites', JSON.stringify(favorites));
+            displayFavorites();
+            if (input.value.toLowerCase() === name) {
+                searchPokemon();
+            }
+        }
+
+        // Search by name
+        function searchPokemonByName(name) {
+            input.value = name;
+            searchPokemon();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Search random Pokémon
+        async function searchRandomPokemon() {
+            const randomId = Math.floor(Math.random() * 1000) + 1;
+            input.value = randomId;
+            searchPokemon();
+        }
+
+        // Initialize favorites on page load
+        window.onload = function() {
+            displayFavorites();
+        };
+    </script>
+</body>
+</html>
